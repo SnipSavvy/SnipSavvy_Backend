@@ -13,6 +13,7 @@ const SharedSchema = new Schema<IShared>({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   workspace_id: {
     type: mongoose.Schema.Types.ObjectId,

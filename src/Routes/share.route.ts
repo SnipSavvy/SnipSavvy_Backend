@@ -3,9 +3,11 @@ import {
   Share_category,
   Share_workspace,
 } from "../controllers/shared.controller";
+const authMiddleware = require("../middlewares/auth.middleware");
+
 const ShareRouter: Router = express.Router();
 
-ShareRouter.post("/category", Share_category);
-ShareRouter.post("/workspace", Share_workspace);
+ShareRouter.post("/category", authMiddleware, Share_category);
+ShareRouter.post("/workspace", authMiddleware, Share_workspace);
 
 module.exports = ShareRouter;

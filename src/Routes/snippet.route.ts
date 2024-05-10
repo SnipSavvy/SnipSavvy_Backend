@@ -5,13 +5,15 @@ import {
   global_search_for_snippets,
   shareSnippet,
 } from "../controllers/snippet.controller";
+const authMiddleware = require("../middlewares/auth.middleware");
+
 import express, { Router } from "express";
 const snippet: Router = express.Router();
 
-snippet.post("/", addSnippet);
-snippet.get("/", getSnippets);
-snippet.put("/share", shareSnippet);
-snippet.delete("/", delete_snippet);
-snippet.get("/global", global_search_for_snippets);
+snippet.post("/", authMiddleware, addSnippet);
+snippet.get("/", authMiddleware, getSnippets);
+snippet.put("/share", authMiddleware, shareSnippet);
+snippet.delete("/", authMiddleware, delete_snippet);
+snippet.get("/global", authMiddleware, global_search_for_snippets);
 
 module.exports = snippet;
