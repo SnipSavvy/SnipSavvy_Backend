@@ -4,7 +4,7 @@ export interface IUser extends Document {
   name: string;
   user_meta_id: mongoose.Schema.Types.ObjectId;
   email: string;
-  image_url?: string;
+  image?: string;
   workspace?: {
     owned: [
       {
@@ -37,7 +37,7 @@ const UserSchema = new Schema<IUser>({
     lowercase: true,
     unique: true,
   },
-  image_url: {
+  image: {
     type: String,
   },
   workspace: {
