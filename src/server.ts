@@ -22,7 +22,7 @@ app.use("/v1/api/workspace", workspace);
 app.use("/vi/api/category", categoryRouter);
 app.use("/v1/api/snippet", snippet);
 app.use("/v1/api/share", Share);
-app.use("/v1/api/user", Share);
+app.use("/v1/api/user", user);
 
 app.listen(PORT, () => {
   logger.info(`Server has started and running on port ${PORT}`);
