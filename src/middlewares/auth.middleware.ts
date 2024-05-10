@@ -14,6 +14,9 @@ const authMiddleware = async (
   next: NextFunction
 ) => {
   const token = req.cookies.token;
+  if (!token) {
+    return res.status(403).json({ msg: "No token found" });
+  }
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { user_id: string };
     console.log(payload);
