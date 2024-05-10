@@ -8,11 +8,14 @@ import {
 } from "../services/workspace.service";
 import logger from "../utils/logger";
 import mongoose from "mongoose";
+import { AuthRequest } from "../utils/interface";
 
-export async function createWorkspace(req: Request, res: Response) {
+export async function createWorkspace(req: AuthRequest, res: Response) {
   try {
-    logger.info(`REQ : Create a workspace with the given data ${req.body}`);
-    const data = await CREATE_WORKSPACE(req.body);
+    logger.info(`REQ : Create a workspace for user ${req.user_id}`);
+    let body = req.body;
+    body.owner = req.user_id;
+    const data = await CREATE_WORKSPACE(body);
     logger.info(`RESP : Workspace created => ${data}`);
     return res.status(201).json({
       message: "Workspace created successfully",
@@ -27,9 +30,9 @@ export async function createWorkspace(req: Request, res: Response) {
   }
 }
 
-export async function fetchWorkspaces(req: Request, res: Response) {
+export async function fetchWorkspaces(req: AuthRequest, res: Response) {
   try {
-    const id = req.query.user_id; // user id
+    const id = req.user_id; // user id
     let data;
 
     if (id && typeof id == "string") {
@@ -56,7 +59,7 @@ export async function fetchWorkspaces(req: Request, res: Response) {
   }
 }
 
-export async function Delete_Workspace(req: Request, res: Response) {
+export async function Delete_Workspace(req: AuthRequest, res: Response) {
   try {
     const w_id = req.query.w_id;
     logger.info(`REQ : Delete a workspace => ${w_id}`);
@@ -64,10 +67,10 @@ export async function Delete_Workspace(req: Request, res: Response) {
       logger.error("workspace id is required while deleting a workspace");
       return res.status(500).json({ mesg: "Workspace id is required" });
     }
-
+    const user_id = req.user_id;
     let data;
-    if (typeof w_id == "string") {
-      data = await DELETE_WORKSPACE(w_id);
+    if (typeof w_id == "string" && typeof user_id == "string") {
+      data = await DELETE_WORKSPACE(w_id, user_id);
     }
 
     logger.info("RES : workspace deleted successfully");

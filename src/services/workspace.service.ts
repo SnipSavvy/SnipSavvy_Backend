@@ -30,9 +30,9 @@ export async function FETCH_ALL_WORKSPACES(id: mongoose.Types.ObjectId) {
   }
 }
 
-export async function DELETE_WORKSPACE(id: string) {
+export async function DELETE_WORKSPACE(id: string, user_id: string) {
   try {
-    await Workspace.deleteOne({ _id: id });
+    await Workspace.deleteOne({ _id: id, owner: user_id });
     return {
       message: "Workspace deleted successfully",
     };

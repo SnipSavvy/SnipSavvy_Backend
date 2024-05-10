@@ -15,9 +15,9 @@ export async function ADD_SNIPPET(body: SNIPPET_SCHEMA) {
   }
 }
 
-export async function FETCH_ALL_SNIPPETS(c_id: string) {
+export async function FETCH_ALL_SNIPPETS(c_id: string, user_id: string) {
   try {
-    const snippetsData = await Snippet.find({ category_id: c_id });
+    const snippetsData = await Snippet.find({ category_id: c_id, user_id });
 
     return snippetsData;
   } catch (error) {
@@ -27,9 +27,9 @@ export async function FETCH_ALL_SNIPPETS(c_id: string) {
     throw error;
   }
 }
-export async function FETCH_A_SNIPPET(s_id: string) {
+export async function FETCH_A_SNIPPET(s_id: string, user_id: string) {
   try {
-    const snippetsData = await Snippet.find({ _id: s_id });
+    const snippetsData = await Snippet.find({ _id: s_id, user_id });
 
     return snippetsData;
   } catch (error) {
@@ -39,10 +39,13 @@ export async function FETCH_A_SNIPPET(s_id: string) {
     throw error;
   }
 }
-export async function UPDATE_SNIPPET_SHARE_STATUS(snippet_id: string) {
+export async function UPDATE_SNIPPET_SHARE_STATUS(
+  snippet_id: string,
+  user_id: string
+) {
   try {
     const snippetsData = await Snippet.updateOne(
-      { _id: snippet_id },
+      { _id: snippet_id, user_id },
       { share_status: true }
     );
     return snippetsData;
@@ -72,9 +75,9 @@ export async function SHARE_SNIPPET_PERSONALLY(
   }
 }
 
-export async function DELETE_SNIPPET(id: string) {
+export async function DELETE_SNIPPET(id: string, user_id: string) {
   try {
-    await Snippet.deleteOne({ _id: id });
+    await Snippet.deleteOne({ _id: id, user_id });
     return {
       message: "snippet deleted successfully",
     };
@@ -84,7 +87,7 @@ export async function DELETE_SNIPPET(id: string) {
   }
 }
 
-export async function GLOBAL_SEARCH(text: string) {
+export async function GLOBAL_SEARCH(text: string, user_id: string) {
   try {
     const result = await Snippet.find({
       $or: [
@@ -92,6 +95,7 @@ export async function GLOBAL_SEARCH(text: string) {
         { description: { $regex: text, $options: "i" } },
         { tags: { $regex: text, $options: "i" } },
       ],
+      user_id,
     });
 
     return result;

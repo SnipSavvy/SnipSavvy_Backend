@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-import logger from "../utils/logger"
+import logger from "../utils/logger";
 const dbConnect = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL, {

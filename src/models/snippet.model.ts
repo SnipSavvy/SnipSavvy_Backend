@@ -17,6 +17,10 @@ const commentSchema = new Schema<IComment>({
 });
 
 const snippetSchema = new Schema({
+  user_id: {
+    type: Schema.Types.ObjectId,
+    required: true,
+  },
   title: {
     type: String,
     required: true,

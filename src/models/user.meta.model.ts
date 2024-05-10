@@ -15,7 +15,6 @@ const userMetaSchema = new Schema<IUserMeta>({
   },
   password: {
     type: String,
-    required: true,
     trim: true,
   },
 });

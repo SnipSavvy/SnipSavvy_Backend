@@ -14,9 +14,12 @@ import crypto from "crypto";
 import { encrypt } from "../utils/encrypt";
 import { emailService } from "../services/mail.service";
 import { send_snippet } from "../utils/mailFormats/send_snippet";
+import { AuthRequest } from "../utils/interface";
 
-export async function addSnippet(req: Request, res: Response) {
+export async function addSnippet(req: AuthRequest, res: Response) {
   const BODY = req.body;
+  const user_id = req.user_id;
+  BODY.user_id = user_id;
   let data;
 
   logger.info(`REQ : add a snippet in a category with data => ${BODY}`);
@@ -35,21 +38,22 @@ export async function addSnippet(req: Request, res: Response) {
   }
 }
 
-export async function getSnippets(req: Request, res: Response) {
+export async function getSnippets(req: AuthRequest, res: Response) {
   let data;
 
   try {
-    const cat_id = req.query.cat_id; // user id
+    const cat_id = req.query.cat_id;
     const snippet_id = req.query.snippet_id;
+    const user_id = req.user_id;
 
-    if (cat_id && typeof cat_id == "string") {
+    if (cat_id && typeof cat_id == "string" && user_id) {
       logger.info(
         `REQ : Fetch all snippets for a particular category => ${cat_id}`
       );
-      data = await FETCH_ALL_SNIPPETS(cat_id);
+      data = await FETCH_ALL_SNIPPETS(cat_id, user_id);
     } else {
-      if (snippet_id && typeof snippet_id == "string") {
-        data = await FETCH_A_SNIPPET(snippet_id);
+      if (snippet_id && typeof snippet_id == "string" && user_id) {
+        data = await FETCH_A_SNIPPET(snippet_id, user_id);
       } else {
         logger.error("No id provided");
         return res.status(500).json({
@@ -69,18 +73,19 @@ export async function getSnippets(req: Request, res: Response) {
   }
 }
 
-export async function shareSnippet(req: Request, res: Response) {
+export async function shareSnippet(req: AuthRequest, res: Response) {
   try {
     const { share, email, snippetid, user_name } = req.body;
+    const user_id = req.user_id;
     logger.info(`REQ : Share snippet => ${snippetid}`);
 
     const id = encodeURIComponent(encrypt(snippetid));
 
     logger.info(`encrypted mongoDB id => ${id}`);
 
-    if (share) {
+    if (share && user_id) {
       //update the db, that this particular snippet is sharable
-      const snippet = await UPDATE_SNIPPET_SHARE_STATUS(snippetid);
+      const snippet = await UPDATE_SNIPPET_SHARE_STATUS(snippetid, user_id);
       if (snippet) {
         const url = `https://snippsavvy.com/collab?snippet=${id}?sharing=true`;
         logger.info(`snippet sharing url generated => ${url}`);
@@ -122,9 +127,10 @@ export async function shareSnippet(req: Request, res: Response) {
   }
 }
 
-export async function delete_snippet(req: Request, res: Response) {
+export async function delete_snippet(req: AuthRequest, res: Response) {
   try {
     const s_id = req.query.s_id;
+    const user_id = req.user_id;
     logger.info(`REQ : delete a snippet => ${s_id}`);
     if (!s_id) {
       logger.error("snippet id is required");
@@ -133,8 +139,8 @@ export async function delete_snippet(req: Request, res: Response) {
         .json({ msg: "snippet id is required for deleting a snippet" });
     }
     let data;
-    if (typeof s_id == "string") {
-      data = await DELETE_SNIPPET(s_id);
+    if (typeof s_id == "string" && user_id) {
+      data = await DELETE_SNIPPET(s_id, user_id);
     }
 
     logger.info(`RES : snippet deleted successfully => ${data}`);
@@ -145,11 +151,15 @@ export async function delete_snippet(req: Request, res: Response) {
   }
 }
 
-export async function global_search_for_snippets(req: Request, res: Response) {
+export async function global_search_for_snippets(
+  req: AuthRequest,
+  res: Response
+) {
   try {
     const text_to_search = req.query.text;
-    if (typeof text_to_search == "string") {
-      const data = await GLOBAL_SEARCH(text_to_search);
+    const user_id = req.user_id;
+    if (typeof text_to_search == "string" && user_id) {
+      const data = await GLOBAL_SEARCH(text_to_search, user_id);
       return res.status(200).json(data);
     }
 
