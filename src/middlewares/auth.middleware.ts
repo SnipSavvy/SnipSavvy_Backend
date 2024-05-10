@@ -5,7 +5,7 @@ import { JWT_SECRET } from "../config/jwt";
 const jwt = require("jsonwebtoken");
 
 interface AuthRequest extends Request {
-  userId?: string;
+  user_id?: string;
 }
 
 const authMiddleware = async (
@@ -13,29 +13,19 @@ const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  const header = req.headers.authorization; // take authorisation from headers
-
-  if (!header || !header.startsWith("Bearer ")) {
-    // checking for the presence and valid syntax of token
-    return res.status(403).json({
-      msg: "Invalid header",
-    });
-  }
-
-  const token = header.split(" ")[1]; // taking out token
-
+  const token = req.cookies.token;
   try {
-    const payload = await jwt.verify(token, JWT_SECRET); //extracting payload from the token
+    const payload = jwt.verify(token, JWT_SECRET) as { user_id: string };
     console.log(payload);
 
-    const user = await User.find({ _id: payload.userId });
+    const user = await User.findOne({ _id: payload.user_id });
     if (!user) {
       return res.status(403).json({
         msg: "Invalid Request! user not found in the token",
       });
     }
 
-    req.userId = payload.userId; // inserting userId directly into the req
+    req.user_id = payload.user_id;
     next();
   } catch (err) {
     return res.status(403).json({
