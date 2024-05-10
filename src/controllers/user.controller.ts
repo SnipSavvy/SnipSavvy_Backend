@@ -16,9 +16,7 @@ export async function register(req: Request, res: Response) {
 
     const token = CREATE_JWT(user);
 
-    res.cookie("token", token, { httpOnly: true });
-
-    return res.status(200).json({ msg: "Login Successfull" });
+    return res.status(200).json({ msg: "Login Successfull", token: token });
   } catch (error) {
     return res.status(500).json({ msg: "Internal Server Error", error });
   }

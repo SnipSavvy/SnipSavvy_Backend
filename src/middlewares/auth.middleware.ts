@@ -13,10 +13,15 @@ const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.cookies.token;
-  if (!token) {
-    return res.status(403).json({ msg: "No token found" });
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith("Bearer ")) {
+    return res.status(403).json({
+      msg: "Invalid header",
+    });
   }
+
+  const token = header.split(" ")[1];
+
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { user_id: string };
     console.log(payload);
