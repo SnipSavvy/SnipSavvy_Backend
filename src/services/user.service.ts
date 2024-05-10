@@ -22,7 +22,8 @@ export async function IS_USER_PRESENT(email: string) {
 export async function CREATE_USER(body: any) {
   try {
     const { email } = body;
-    const user = await UserMeta.create(email);
+    console.log("service body =>", body);
+    const user = await UserMeta.create({ email });
     body.user_meta_id = user._id;
     const user_data = await User.create(body);
     return user_data;
@@ -40,8 +41,8 @@ export async function CREATE_JWT(user: IUser) {
       name: name,
       email: email,
     };
-    logger.info(`jwt secret => ${JWT_SECRET}`);
     const token = jwt.sign(payload, JWT_SECRET);
+    logger.info(`Generated token => ${token}`);
     return token;
   } catch (error) {
     logger.error("caught error in user service while generating JWT");
