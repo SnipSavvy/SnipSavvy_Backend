@@ -4,6 +4,6 @@ import express, { Router } from "express";
 import { register } from "../controllers/user.controller";
 const user: Router = express.Router();
 
-user.post("/", authMiddleware, register);
+user.post("/", register);
 
 module.exports = user;
