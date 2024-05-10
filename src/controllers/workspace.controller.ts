@@ -32,7 +32,7 @@ export async function createWorkspace(req: AuthRequest, res: Response) {
 
 export async function fetchWorkspaces(req: AuthRequest, res: Response) {
   try {
-    const id = req.user_id; // user id
+    const id = req.user_id;
     let data;
 
     if (id && typeof id == "string") {
