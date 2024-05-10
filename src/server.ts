@@ -9,6 +9,7 @@ const workspace = require("./Routes/workspace.route");
 const categoryRouter = require("./Routes/category.route");
 const snippet = require("./Routes/snippet.route");
 const Share = require("./Routes/share.route");
+const user = require("./Routes/user.route");
 dotenv.config();
 
 db();
@@ -21,6 +22,7 @@ app.use("/v1/api/workspace", workspace);
 app.use("/vi/api/category", categoryRouter);
 app.use("/v1/api/snippet", snippet);
 app.use("/v1/api/share", Share);
+app.use("/v1/api/user", Share);
 
 app.listen(PORT, () => {
   logger.info(`Server has started and running on port ${PORT}`);
