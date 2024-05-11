@@ -80,3 +80,30 @@ export async function DELETE_WORKSPACE_ACCESS({
     throw error;
   }
 }
+
+export async function EDIT_WORKSPACE(Workspace_id: string, updatedWorkspaceData: Partial<WorkspaceDocument>, owner_id:any) {
+  try {
+    const existingWorkspace = await Workspace.findOne({_id :Workspace_id, owner :owner_id });
+
+    if (!existingWorkspace) {
+      logger.error(`Workspace with id ${Workspace_id} not found`);
+      return null;
+    }
+
+    if (updatedWorkspaceData.name !== undefined) {
+      existingWorkspace.name = updatedWorkspaceData.name;
+    }
+
+    if (updatedWorkspaceData.description !== undefined) {
+      existingWorkspace.description = updatedWorkspaceData.description;
+    }
+
+    const updatedWorkspace = await existingWorkspace.save();
+
+    logger.info(`Workspace with id ${Workspace_id} edited successfully`);
+    return updatedWorkspace;
+  } catch (error) {
+    logger.error(`Error editing workspace: ${error}`);
+    throw error;
+  }
+}

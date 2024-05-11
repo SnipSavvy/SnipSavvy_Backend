@@ -3,6 +3,7 @@ import {
   CREATE_WORKSPACE,
   DELETE_WORKSPACE,
   DELETE_WORKSPACE_ACCESS,
+  EDIT_WORKSPACE,
   FETCH_ALL_WORKSPACES,
   GET_WORKSPACE_ACCESS,
 } from "../services/workspace.service";
@@ -124,5 +125,29 @@ export async function Remove_Workspace_Access(req: Request, res: Response) {
   } catch (error) {
     logger.error("Internal Server Error");
     return res.status(500).json({ msg: "Internal Server Error" });
+  }
+}
+
+export async function editWorkspace(req: AuthRequest, res: Response) {
+  try {
+    const {id,  name, description } = req.body; 
+    const owner_id = req.user_id;
+    const updatedWorkspace = await EDIT_WORKSPACE(id, { name, description} , owner_id);
+    if(!updatedWorkspace){
+      return res.status(404).json({
+        message: "Workspace Not Found",
+      });
+    }
+    
+    if (updatedWorkspace) {
+      logger.info(`Workspace with id ${id} edited successfully`);
+      return res.status(200).json({ message: 'Workspace edited successfully', data: updatedWorkspace });
+    } else {
+      logger.error(`Workspace with id ${id} not found or could not be edited`);
+      return res.status(404).json({ message: 'Workspace not found or could not be edited' });
+    }
+  } catch (error) {
+    logger.error(`Error editing workspace: ${error}`);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }
