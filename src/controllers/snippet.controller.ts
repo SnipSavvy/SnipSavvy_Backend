@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   ADD_SNIPPET,
+  CHECK_ACCESS,
   DELETE_SNIPPET,
   FETCH_ALL_SNIPPETS,
   FETCH_A_SNIPPET,
@@ -166,5 +167,24 @@ export async function global_search_for_snippets(
     return res.status(500).json({ msg: "query is not valid" });
   } catch (error) {
     return res.status(500).json({ msg: "INTERNAL SERVER ERROR" });
+  }
+}
+
+export async function has_snippet_access(req: AuthRequest, res: Response) {
+  try {
+    logger.info(`REQ : Snippet Access check request for => ${req.body.email}`);
+    const Body = req.body;
+
+    const has_access = await CHECK_ACCESS(Body);
+    logger.info(`RES : Snippet Access check response => ${has_access}`);
+    if (has_access) {
+      return res.status(200).json({ msg: "Has Access => TRUE" });
+    }
+    return res.status(200).json({ msg: "Has Access => FALSE" });
+  } catch (error) {
+    logger.error(`Error : error found in checking snippet access => ${error}`);
+    return res
+      .status(500)
+      .json({ msg: `error found in checking snippet access => ${error}` });
   }
 }
