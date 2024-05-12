@@ -1,4 +1,5 @@
 import { Workspace } from "../models/workspace.model";
+import Snippet from "../models/snippet.model";
 import mongoose from "mongoose";
 import { WORKSPACE_SCHEMA } from "../utils/interface";
 import { WorkspaceDocument } from "../models/workspace.model";
@@ -33,6 +34,7 @@ export async function FETCH_ALL_WORKSPACES(id: mongoose.Types.ObjectId) {
 export async function DELETE_WORKSPACE(id: string, user_id: string) {
   try {
     await Workspace.deleteOne({ _id: id, owner: user_id });
+    await Snippet.deleteMany({ workspace_id : id })
     return {
       message: "Workspace deleted successfully",
     };

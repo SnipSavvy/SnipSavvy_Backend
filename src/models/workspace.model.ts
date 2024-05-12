@@ -3,7 +3,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface Category {
-    // _id: mongoose.Schema.Types.ObjectId;
+    _id?: mongoose.Schema.Types.ObjectId;
     name: string;
     description: string;
 }
