@@ -72,3 +72,48 @@ export async function DELETE_CATEGORIES(
     throw error;
   }
 }
+export async function UPDATE_CATEGORY(
+  workspace_id: string,
+  category_id: string,
+  updatedData: {
+    name: string;
+  description: string;}
+){
+  try {
+    const workspace = await Workspace.findOne({_id : workspace_id});
+    if (typeof workspace === "undefined" || !workspace) {
+      logger.error("Workspace not found");
+      return null;
+    }
+    if (!workspace.categories) {
+      logger.error("Categories not found in workspace");
+      return null;
+    }
+    const matchingCategory = workspace.categories.find(
+      (category:any) => category._id.toString() === category_id.toString()
+    );
+    
+    if (matchingCategory) {
+      console.log(matchingCategory);
+    } else {
+      console.log("Matching category not found");
+    }
+    
+
+    if (!matchingCategory) {
+      logger.error("Category not found");
+      return null;
+    }
+
+    
+    matchingCategory.name = updatedData.name;
+
+    // Save the updated workspace
+    const updatedWorkspace = await workspace.save();
+
+    return updatedWorkspace;
+  } catch (error) {
+    logger.error("Error in category service while updating the category:", error);
+    throw error;
+  }
+}

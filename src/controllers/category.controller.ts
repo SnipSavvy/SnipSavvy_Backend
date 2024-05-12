@@ -5,6 +5,7 @@ import {
   CREATE_CATEGORY,
   DELETE_CATEGORIES,
   FETCH_CATEGORIES_BY_WORKSPACE,
+  UPDATE_CATEGORY,
 } from "../services/category.service";
 
 export async function createCategory(req: Request, res: Response) {
@@ -79,6 +80,37 @@ export async function deleteCategories(req: Request, res: Response) {
     return res.status(500).json({
       message: "Error deleting category",
       error,
+    });
+  }
+}
+export async function updateCategory(req: Request, res: Response) {
+  const { workspace_id, category_id } = req.params; 
+
+  try {
+    logger.info(`REQ : Update Category ${category_id} for Workspace ${workspace_id}`);
+    
+    const updatedData = await UPDATE_CATEGORY(
+      workspace_id,
+      category_id,
+      req.body 
+    );
+
+    if (!updatedData) {
+      return res.status(404).json({
+        message: "Category not found",
+      });
+    }
+
+    logger.info(`RESP : Category updated => ${updatedData}`);
+    return res.status(200).json({
+      message: "Category updated successfully",
+      data: updatedData,
+    });
+  } catch (error) {
+    logger.error(`Error updating category => ${error}`);
+    return res.status(500).json({
+      message: "Error updating category",
+      error: error,
     });
   }
 }

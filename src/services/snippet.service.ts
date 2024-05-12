@@ -106,3 +106,26 @@ export async function GLOBAL_SEARCH(text: string, user_id: string) {
     throw error;
   }
 }
+
+export async function CHECK_ACCESS(data: {
+  snippet_id: string;
+  email: string;
+}) {
+  try {
+    const { snippet_id, email } = data;
+    const snippet = await SharedDb.findOne({
+      _id: snippet_id,
+      email,
+      shared_data: "snippet",
+    });
+    if (snippet) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    logger.error(
+      `Caught error in snippet service while checking for snippet access => ${error}`
+    );
+    throw error;
+  }
+}

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   ADD_SNIPPET,
+  CHECK_ACCESS,
   DELETE_SNIPPET,
   FETCH_ALL_SNIPPETS,
   FETCH_A_SNIPPET,
@@ -87,7 +88,7 @@ export async function shareSnippet(req: AuthRequest, res: Response) {
       //update the db, that this particular snippet is sharable
       const snippet = await UPDATE_SNIPPET_SHARE_STATUS(snippetid, user_id);
       if (snippet) {
-        const url = `https://snippsavvy.com/collab?snippet=${id}&sharing=true`;
+        const url = `https://snipsavvy.vercel.app/collab?snippet=${id}&sharing=true`;
         logger.info(`snippet sharing url generated => ${url}`);
         return res.status(200).json({ url: url });
       }
@@ -98,7 +99,7 @@ export async function shareSnippet(req: AuthRequest, res: Response) {
       // write logic for sending link in a mail
       const newemail = encodeURIComponent(encrypt(email));
       const snippet = SHARE_SNIPPET_PERSONALLY(snippetid, email);
-      const url = `https://snippsavvy.com/collab?snippet=${id}&email=${newemail}`;
+      const url = `https://snipsavvy.vercel.app/collab?snippet=${id}&email=${newemail}`;
       logger.info(`snippet personal sharing url generated => ${url}`);
       const content = {
         user_name: user_name,
@@ -166,5 +167,24 @@ export async function global_search_for_snippets(
     return res.status(500).json({ msg: "query is not valid" });
   } catch (error) {
     return res.status(500).json({ msg: "INTERNAL SERVER ERROR" });
+  }
+}
+
+export async function has_snippet_access(req: AuthRequest, res: Response) {
+  try {
+    logger.info(`REQ : Snippet Access check request for => ${req.body.email}`);
+    const Body = req.body;
+
+    const has_access = await CHECK_ACCESS(Body);
+    logger.info(`RES : Snippet Access check response => ${has_access}`);
+    if (has_access) {
+      return res.status(200).json({ msg: "Has Access => TRUE" });
+    }
+    return res.status(200).json({ msg: "Has Access => FALSE" });
+  } catch (error) {
+    logger.error(`Error : error found in checking snippet access => ${error}`);
+    return res
+      .status(500)
+      .json({ msg: `error found in checking snippet access => ${error}` });
   }
 }
