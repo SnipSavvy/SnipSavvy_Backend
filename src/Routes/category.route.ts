@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import {
   createCategory,
+  deleteCategories,
   fetchCategoriesByWorkspace,
 } from "../controllers/category.controller";
 const categoryRouter: Router = express.Router();
@@ -12,5 +13,5 @@ categoryRouter.get(
   authMiddleware,
   fetchCategoriesByWorkspace
 );
-
+categoryRouter.delete("/", authMiddleware, deleteCategories);
 module.exports = categoryRouter;
