@@ -108,7 +108,7 @@ export async function shareSnippet(req: AuthRequest, res: Response) {
 
       //send mail
 
-      emailService(
+      await emailService(
         email,
         `${user_name} has sent you a snippet ⭐`,
         content,

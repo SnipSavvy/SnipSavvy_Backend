@@ -14,8 +14,8 @@ const emailService = async (
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "snippsavvy.official@gmail.com" || "",
-        pass: "lbxn qtpn sbua qtpt" || "",
+        user: process.env.EMAIL_USERNAME || "",
+        pass: process.env.EMAIL_PASSWORD || "",
       },
     });
 
