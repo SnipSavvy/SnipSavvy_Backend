@@ -14,6 +14,7 @@ categoryRouter.get(
   authMiddleware,
   fetchCategoriesByWorkspace
 );
+categoryRouter.put("/:workspace_id/:category_id",authMiddleware, updateCategory)
 categoryRouter.delete("/", authMiddleware, deleteCategories);
 module.exports = categoryRouter;
-categoryRouter.put("/:workspace_id/:category_id",updateCategory)
+
