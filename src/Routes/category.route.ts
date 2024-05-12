@@ -3,6 +3,7 @@ import {
   createCategory,
   deleteCategories,
   fetchCategoriesByWorkspace,
+  updateCategory,
 } from "../controllers/category.controller";
 const categoryRouter: Router = express.Router();
 const authMiddleware = require("../middlewares/auth.middleware");
@@ -15,3 +16,4 @@ categoryRouter.get(
 );
 categoryRouter.delete("/", authMiddleware, deleteCategories);
 module.exports = categoryRouter;
+categoryRouter.put("/:workspace_id/:category_id",updateCategory)
