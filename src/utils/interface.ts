@@ -38,5 +38,4 @@ export interface SHARE_TO_EMAIL {
   email: string;
   workspace_id: mongoose.Schema.Types.ObjectId;
   category_id: mongoose.Schema.Types.ObjectId;
-  shared_data: string;
 }
