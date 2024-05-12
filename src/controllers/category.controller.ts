@@ -3,6 +3,7 @@ import logger from "../utils/logger";
 import mongoose from "mongoose";
 import {
   CREATE_CATEGORY,
+  DELETE_CATEGORIES,
   FETCH_CATEGORIES_BY_WORKSPACE,
 } from "../services/category.service";
 
@@ -51,6 +52,33 @@ export async function fetchCategoriesByWorkspace(req: Request, res: Response) {
     return res.status(500).json({
       message: "Error fetching categories",
       error: error,
+    });
+  }
+}
+
+export async function deleteCategories(req: Request, res: Response) {
+  const { workspace_id, category_id } = req.body;
+  try {
+    logger.info(`REQ : Delete a Category with ID ${category_id}`);
+    const deleted = await DELETE_CATEGORIES(
+     workspace_id,
+      category_id
+    );
+    if (!deleted) {
+      return res.status(404).json({
+        message: "Category not found",
+      });
+    }
+
+    logger.info("Category deleted successfully");
+    return res.status(200).json({
+      message: "Category deleted successfully",
+    });
+  } catch (error) {
+    logger.error(`Error deleting category: ${error}`);
+    return res.status(500).json({
+      message: "Error deleting category",
+      error,
     });
   }
 }
