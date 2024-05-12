@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use("/v1/api/workspace", workspace);
-app.use("/vi/api/category", categoryRouter);
+app.use("/v1/api/category", categoryRouter);
 app.use("/v1/api/snippet", snippet);
 app.use("/v1/api/share", Share);
 app.use("/v1/api/user", user);
