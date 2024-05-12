@@ -94,7 +94,6 @@ export async function UPDATE_CATEGORY(
     );
     
     if (matchingCategory) {
-      // Yahan pe matching category ka pura data hai
       console.log(matchingCategory);
     } else {
       console.log("Matching category not found");
@@ -114,7 +113,7 @@ export async function UPDATE_CATEGORY(
 
     return updatedWorkspace;
   } catch (error) {
-    logger.error("Error updating category:", error);
+    logger.error("Error in category service while updating the category:", error);
     throw error;
   }
 }
