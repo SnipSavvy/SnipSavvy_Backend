@@ -88,7 +88,7 @@ export async function shareSnippet(req: AuthRequest, res: Response) {
       //update the db, that this particular snippet is sharable
       const snippet = await UPDATE_SNIPPET_SHARE_STATUS(snippetid, user_id);
       if (snippet) {
-        const url = `https://snippsavvy.com/collab?snippet=${id}&sharing=true`;
+        const url = `https://snipsavvy.vercel.app/collab?snippet=${id}&sharing=true`;
         logger.info(`snippet sharing url generated => ${url}`);
         return res.status(200).json({ url: url });
       }
@@ -99,7 +99,7 @@ export async function shareSnippet(req: AuthRequest, res: Response) {
       // write logic for sending link in a mail
       const newemail = encodeURIComponent(encrypt(email));
       const snippet = SHARE_SNIPPET_PERSONALLY(snippetid, email);
-      const url = `https://snippsavvy.com/collab?snippet=${id}&email=${newemail}`;
+      const url = `https://snipsavvy.vercel.app/collab?snippet=${id}&email=${newemail}`;
       logger.info(`snippet personal sharing url generated => ${url}`);
       const content = {
         user_name: user_name,
