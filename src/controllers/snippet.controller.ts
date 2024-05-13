@@ -173,14 +173,18 @@ export async function global_search_for_snippets(
 export async function has_snippet_access(req: AuthRequest, res: Response) {
   try {
     logger.info(`REQ : Snippet Access check request for => ${req.body.email}`);
-    const Body = req.body;
+    const { snippet_id, email } = req.params;
 
-    const has_access = await CHECK_ACCESS(Body);
+    const has_access = await CHECK_ACCESS(snippet_id, email);
     logger.info(`RES : Snippet Access check response => ${has_access}`);
     if (has_access) {
-      return res.status(200).json({ msg: "Has Access => TRUE" });
+      return res
+        .status(200)
+        .json({ msg: "Has Access => TRUE", status: has_access });
     }
-    return res.status(200).json({ msg: "Has Access => FALSE" });
+    return res
+      .status(200)
+      .json({ msg: "Has Access => FALSE", status: has_access });
   } catch (error) {
     logger.error(`Error : error found in checking snippet access => ${error}`);
     return res
