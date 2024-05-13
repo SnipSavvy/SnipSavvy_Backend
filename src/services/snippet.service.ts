@@ -29,7 +29,7 @@ export async function FETCH_ALL_SNIPPETS(c_id: string, user_id: string) {
 }
 export async function FETCH_A_SNIPPET(s_id: string, user_id: string) {
   try {
-    const snippetsData = await Snippet.find({ _id: s_id, user_id });
+    const snippetsData = await Snippet.find({ _id: s_id }); // [FIXME] removed user_id check, for sharing purpose, need to fix this in future
 
     return snippetsData;
   } catch (error) {
@@ -107,12 +107,8 @@ export async function GLOBAL_SEARCH(text: string, user_id: string) {
   }
 }
 
-export async function CHECK_ACCESS(data: {
-  snippet_id: string;
-  email: string;
-}) {
+export async function CHECK_ACCESS(snippet_id: string, email: string) {
   try {
-    const { snippet_id, email } = data;
     const snippet = await SharedDb.findOne({
       _id: snippet_id,
       email,
