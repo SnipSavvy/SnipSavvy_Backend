@@ -16,6 +16,10 @@ snippet.get("/", authMiddleware, getSnippets);
 snippet.put("/share", authMiddleware, shareSnippet);
 snippet.delete("/", authMiddleware, delete_snippet);
 snippet.get("/global", authMiddleware, global_search_for_snippets);
-snippet.get("/check-access", authMiddleware, has_snippet_access);
+snippet.get(
+  "/check-access/:snippet_id/:email",
+  authMiddleware,
+  has_snippet_access
+);
 
 module.exports = snippet;
