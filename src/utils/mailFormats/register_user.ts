@@ -18,7 +18,7 @@ export function register_user(data: any) {
                   <tbody>
                     <tr>
                       <td>
-                        <a href="http://localhost:3000/" style="line-height:100%;text-decoration:none;display:block;max-width:100%;background-color:#5F51E8;border-radius:3px;color:#fff;font-size:16px;text-align:center;padding:12px 12px 12px 12px" target="_blank">Get Started</a>
+                        <a href="https://snipsavvy.vercel.app/" style="line-height:100%;text-decoration:none;display:block;max-width:100%;background-color:#5F51E8;border-radius:3px;color:#fff;font-size:16px;text-align:center;padding:12px 12px 12px 12px" target="_blank">Get Started</a>
                       </td>
                     </tr>
                   </tbody>
