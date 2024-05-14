@@ -3,6 +3,7 @@ import {
   ADD_SNIPPET,
   CHECK_ACCESS,
   DELETE_SNIPPET,
+  EDIT_SNIPPET,
   FETCH_ALL_SNIPPETS,
   FETCH_A_SNIPPET,
   GLOBAL_SEARCH,
@@ -169,6 +170,24 @@ export async function global_search_for_snippets(
   }
 }
 
+export async function edit_snippet(
+  req: AuthRequest,
+  res: Response
+){
+  try {
+    const {id} = req.params;
+    const Body = req.body;
+
+    const user_id = req.user_id || "";
+
+    const updatedSnippet = await EDIT_SNIPPET(id,user_id,  Body);
+    // console.log("updated",updatedSnippet)
+    return res.status(200).json(updatedSnippet);
+  } catch (error) {
+    logger.error("Error in editing snippet")
+    return res.status(500).json({msg:"Error in editing snippet"})
+  }
+}
 export async function has_snippet_access(req: AuthRequest, res: Response) {
   try {
     logger.info(`REQ : Snippet Access check request for => ${req.body.email}`);

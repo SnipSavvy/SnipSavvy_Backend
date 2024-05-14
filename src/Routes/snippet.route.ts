@@ -1,6 +1,7 @@
 import {
   addSnippet,
   delete_snippet,
+  edit_snippet,
   getSnippets,
   global_search_for_snippets,
   has_snippet_access,
@@ -16,6 +17,7 @@ snippet.get("/", authMiddleware, getSnippets);
 snippet.put("/share", authMiddleware, shareSnippet);
 snippet.delete("/", authMiddleware, delete_snippet);
 snippet.get("/global", authMiddleware, global_search_for_snippets);
+snippet.patch("/:id", authMiddleware, edit_snippet)
 snippet.get(
   "/check-access/:snippet_id/:email",
   authMiddleware,
