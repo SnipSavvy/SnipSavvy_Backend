@@ -15,9 +15,9 @@ export async function ADD_SNIPPET(body: SNIPPET_SCHEMA) {
   }
 }
 
-export async function FETCH_ALL_SNIPPETS(c_id: string, user_id: string) {
+export async function FETCH_ALL_SNIPPETS(c_id: string) {
   try {
-    const snippetsData = await Snippet.find({ category_id: c_id, user_id });
+    const snippetsData = await Snippet.find({ category_id: c_id });
 
     return snippetsData;
   } catch (error) {
@@ -27,7 +27,7 @@ export async function FETCH_ALL_SNIPPETS(c_id: string, user_id: string) {
     throw error;
   }
 }
-export async function FETCH_A_SNIPPET(s_id: string, user_id: string) {
+export async function FETCH_A_SNIPPET(s_id: string) {
   try {
     const snippetsData = await Snippet.find({ _id: s_id }); // [FIXME] removed user_id check, for sharing purpose, need to fix this in future
 

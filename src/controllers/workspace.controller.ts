@@ -7,6 +7,7 @@ import {
   FETCH_ALL_WORKSPACES,
   FETCH_SHARED_WORKSPACES,
   GET_WORKSPACE_ACCESS,
+  REMOVE_SHARED_WORKSPACES,
 } from "../services/workspace.service";
 import logger from "../utils/logger";
 import mongoose from "mongoose";
@@ -160,5 +161,28 @@ export async function editWorkspace(req: AuthRequest, res: Response) {
   } catch (error) {
     logger.error(`Error editing workspace: ${error}`);
     return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function remove_shared_workspaces(req: Request, res: Response) {
+  try {
+    const { workspace_id, email } = req.body;
+    logger.info(
+      `REQ : remove shared workspace for email => ${email} & workspace_id => ${workspace_id}}`
+    );
+    if (workspace_id && email) {
+      const data = await REMOVE_SHARED_WORKSPACES(workspace_id, email);
+      logger.info("Shared workspace has been removed successfully");
+      return res.status(200).json({ msg: "Shared workspace has been removed" });
+    }
+    logger.error("workspace id or email is not provided in the body");
+    return res
+      .status(500)
+      .json({ msg: "Workspace id or email is not provided in body" });
+  } catch (error) {
+    logger.error(
+      `Internal server error while removing shared workspace => ${error}`
+    );
+    return res.status(500).json({ msg: `Internal server error => ${error}` });
   }
 }

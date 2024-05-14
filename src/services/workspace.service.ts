@@ -157,3 +157,18 @@ export async function FETCH_SHARED_WORKSPACES(email: string) {
     throw error;
   }
 }
+
+export async function REMOVE_SHARED_WORKSPACES(
+  workspace_id: string,
+  email: string
+) {
+  try {
+    const data = await SharedDb.deleteOne({ workspace_id, email });
+    return data;
+  } catch (error) {
+    logger.error(
+      "Caught error in workspace service while removing the shared workspace"
+    );
+    throw error;
+  }
+}
