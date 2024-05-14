@@ -56,6 +56,9 @@ export async function UPDATE_SNIPPET_SHARE_STATUS(
     throw error;
   }
 }
+
+
+
 export async function SHARE_SNIPPET_PERSONALLY(
   snippet_id: string,
   email: string
@@ -106,3 +109,21 @@ export async function GLOBAL_SEARCH(text: string, user_id: string) {
     throw error;
   }
 }
+// export interface SNIP_SCHEMA {
+//   title: string;
+//   description: string;
+//   code: string;
+//   tags: string[];
+// }
+
+export async function EDIT_SNIPPET(id:string, user_id: string, Body: Partial<SNIPPET_SCHEMA>){
+  try {
+    const updatedSnippet = await Snippet.findOneAndUpdate({_id: id, user_id}, {$set:{...Body}},{new:true})
+    console.log("updated",updatedSnippet)
+    return updatedSnippet;
+  } catch (error) {
+    logger.error(`Error editing snippet: ${error}`)
+    throw error;
+  }
+}
+

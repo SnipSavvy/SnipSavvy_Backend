@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   ADD_SNIPPET,
   DELETE_SNIPPET,
+  EDIT_SNIPPET,
   FETCH_ALL_SNIPPETS,
   FETCH_A_SNIPPET,
   GLOBAL_SEARCH,
@@ -166,5 +167,24 @@ export async function global_search_for_snippets(
     return res.status(500).json({ msg: "query is not valid" });
   } catch (error) {
     return res.status(500).json({ msg: "INTERNAL SERVER ERROR" });
+  }
+}
+
+export async function edit_snippet(
+  req: AuthRequest,
+  res: Response
+){
+  try {
+    const {id} = req.params;
+    const Body = req.body;
+
+    const user_id = req.user_id || "";
+
+    const updatedSnippet = await EDIT_SNIPPET(id,user_id,  Body);
+    // console.log("updated",updatedSnippet)
+    return res.status(200).json(updatedSnippet);
+  } catch (error) {
+    logger.error("Error in editing snippet")
+    return res.status(500).json({msg:"Error in editing snippet"})
   }
 }
