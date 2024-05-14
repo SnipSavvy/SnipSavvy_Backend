@@ -5,6 +5,7 @@ import {
   editWorkspace,
   fetchWorkspaces,
   get_workspace_access,
+  remove_shared_workspaces,
 } from "../controllers/workspace.controller";
 const authMiddleware = require("../middlewares/auth.middleware");
 
@@ -17,5 +18,6 @@ workspace.delete("/", authMiddleware, Delete_Workspace);
 workspace.get("/access/:w_id", authMiddleware, get_workspace_access);
 workspace.delete("/access", authMiddleware, Remove_Workspace_Access);
 workspace.put("/", authMiddleware, editWorkspace);
+workspace.delete("/shared", authMiddleware, remove_shared_workspaces);
 
 module.exports = workspace;

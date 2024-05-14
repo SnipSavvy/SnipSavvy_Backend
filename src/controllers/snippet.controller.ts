@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   ADD_SNIPPET,
+  CHECK_ACCESS,
   DELETE_SNIPPET,
   EDIT_SNIPPET,
   FETCH_ALL_SNIPPETS,
@@ -45,16 +46,15 @@ export async function getSnippets(req: AuthRequest, res: Response) {
   try {
     const cat_id = req.query.cat_id;
     const snippet_id = req.query.snippet_id;
-    const user_id = req.user_id;
 
-    if (cat_id && typeof cat_id == "string" && user_id) {
+    if (cat_id && typeof cat_id == "string") {
       logger.info(
         `REQ : Fetch all snippets for a particular category => ${cat_id}`
       );
-      data = await FETCH_ALL_SNIPPETS(cat_id, user_id);
+      data = await FETCH_ALL_SNIPPETS(cat_id);
     } else {
-      if (snippet_id && typeof snippet_id == "string" && user_id) {
-        data = await FETCH_A_SNIPPET(snippet_id, user_id);
+      if (snippet_id && typeof snippet_id == "string") {
+        data = await FETCH_A_SNIPPET(snippet_id);
       } else {
         logger.error("No id provided");
         return res.status(500).json({
@@ -88,7 +88,7 @@ export async function shareSnippet(req: AuthRequest, res: Response) {
       //update the db, that this particular snippet is sharable
       const snippet = await UPDATE_SNIPPET_SHARE_STATUS(snippetid, user_id);
       if (snippet) {
-        const url = `https://snippsavvy.com/collab?snippet=${id}&sharing=true`;
+        const url = `https://snipsavvy.vercel.app/collab?snippet=${id}&sharing=true`;
         logger.info(`snippet sharing url generated => ${url}`);
         return res.status(200).json({ url: url });
       }
@@ -99,7 +99,7 @@ export async function shareSnippet(req: AuthRequest, res: Response) {
       // write logic for sending link in a mail
       const newemail = encodeURIComponent(encrypt(email));
       const snippet = SHARE_SNIPPET_PERSONALLY(snippetid, email);
-      const url = `https://snippsavvy.com/collab?snippet=${id}&email=${newemail}`;
+      const url = `https://snipsavvy.vercel.app/collab?snippet=${id}&email=${newemail}`;
       logger.info(`snippet personal sharing url generated => ${url}`);
       const content = {
         user_name: user_name,
@@ -109,7 +109,7 @@ export async function shareSnippet(req: AuthRequest, res: Response) {
 
       //send mail
 
-      emailService(
+      await emailService(
         email,
         `${user_name} has sent you a snippet ⭐`,
         content,
@@ -186,5 +186,27 @@ export async function edit_snippet(
   } catch (error) {
     logger.error("Error in editing snippet")
     return res.status(500).json({msg:"Error in editing snippet"})
+  }
+}
+export async function has_snippet_access(req: AuthRequest, res: Response) {
+  try {
+    logger.info(`REQ : Snippet Access check request for => ${req.body.email}`);
+    const { snippet_id, email } = req.params;
+
+    const has_access = await CHECK_ACCESS(snippet_id, email);
+    logger.info(`RES : Snippet Access check response => ${has_access}`);
+    if (has_access) {
+      return res
+        .status(200)
+        .json({ msg: "Has Access => TRUE", status: has_access });
+    }
+    return res
+      .status(200)
+      .json({ msg: "Has Access => FALSE", status: has_access });
+  } catch (error) {
+    logger.error(`Error : error found in checking snippet access => ${error}`);
+    return res
+      .status(500)
+      .json({ msg: `error found in checking snippet access => ${error}` });
   }
 }
