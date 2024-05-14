@@ -34,7 +34,7 @@ export async function FETCH_ALL_WORKSPACES(id: mongoose.Types.ObjectId) {
 export async function DELETE_WORKSPACE(id: string, user_id: string) {
   try {
     await Workspace.deleteOne({ _id: id, owner: user_id });
-    await Snippet.deleteMany({ workspace_id : id })
+    await Snippet.deleteMany({ workspace_id: id });
     return {
       message: "Workspace deleted successfully",
     };
@@ -83,9 +83,16 @@ export async function DELETE_WORKSPACE_ACCESS({
   }
 }
 
-export async function EDIT_WORKSPACE(Workspace_id: string, updatedWorkspaceData: Partial<WorkspaceDocument>, owner_id:any) {
+export async function EDIT_WORKSPACE(
+  Workspace_id: string,
+  updatedWorkspaceData: Partial<WorkspaceDocument>,
+  owner_id: any
+) {
   try {
-    const existingWorkspace = await Workspace.findOne({_id :Workspace_id, owner :owner_id });
+    const existingWorkspace = await Workspace.findOne({
+      _id: Workspace_id,
+      owner: owner_id,
+    });
 
     if (!existingWorkspace) {
       logger.error(`Workspace with id ${Workspace_id} not found`);
@@ -106,6 +113,47 @@ export async function EDIT_WORKSPACE(Workspace_id: string, updatedWorkspaceData:
     return updatedWorkspace;
   } catch (error) {
     logger.error(`Error editing workspace: ${error}`);
+    throw error;
+  }
+}
+
+export async function FETCH_SHARED_WORKSPACES(email: string) {
+  try {
+    const data = await SharedDb.find({ email, shared_data: "workspace" });
+
+    const workspaceIds = data.map((shared) => shared.workspace_id);
+
+    const pipeline = [
+      {
+        $match: { workspace_id: { $in: workspaceIds } },
+      },
+      {
+        $lookup: {
+          from: "workspaces",
+          localField: "workspace_id",
+          foreignField: "_id",
+          as: "workspace",
+        },
+      },
+      {
+        $unwind: "$workspace",
+      },
+      {
+        $project: {
+          _id: 0,
+          workspace_id: "$workspace._id",
+          workspace_name: "$workspace.name",
+          workspace_description: "$workspace.description",
+        },
+      },
+    ];
+    const result = await SharedDb.aggregate(pipeline);
+    return result;
+  } catch (error) {
+    console.error(error);
+    logger.error(
+      "Caught error in workspace service while fetching shared workspaces"
+    );
     throw error;
   }
 }
