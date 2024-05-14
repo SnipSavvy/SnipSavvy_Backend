@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const db = require("./config/dbConnect");
 const app = express();
 const cors = require("cors");
-const PORT = 8001;
+const PORT = process.env.PORT || 8001;
 import logger from "./utils/logger";
 const workspace = require("./Routes/workspace.route");
 const categoryRouter = require("./Routes/category.route");
