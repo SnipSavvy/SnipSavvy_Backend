@@ -45,16 +45,15 @@ export async function getSnippets(req: AuthRequest, res: Response) {
   try {
     const cat_id = req.query.cat_id;
     const snippet_id = req.query.snippet_id;
-    const user_id = req.user_id;
 
-    if (cat_id && typeof cat_id == "string" && user_id) {
+    if (cat_id && typeof cat_id == "string") {
       logger.info(
         `REQ : Fetch all snippets for a particular category => ${cat_id}`
       );
-      data = await FETCH_ALL_SNIPPETS(cat_id, user_id);
+      data = await FETCH_ALL_SNIPPETS(cat_id);
     } else {
-      if (snippet_id && typeof snippet_id == "string" && user_id) {
-        data = await FETCH_A_SNIPPET(snippet_id, user_id);
+      if (snippet_id && typeof snippet_id == "string") {
+        data = await FETCH_A_SNIPPET(snippet_id);
       } else {
         logger.error("No id provided");
         return res.status(500).json({
