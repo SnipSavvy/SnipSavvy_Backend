@@ -4,6 +4,7 @@ const db = require("./config/dbConnect");
 const app = express();
 const cors = require("cors");
 const PORT = 8001;
+import { Request,Response } from "express";
 import logger from "./utils/logger";
 const workspace = require("./Routes/workspace.route");
 const categoryRouter = require("./Routes/category.route");
@@ -23,6 +24,14 @@ app.use("/vi/api/category", categoryRouter);
 app.use("/v1/api/snippet", snippet);
 app.use("/v1/api/share", Share);
 app.use("/v1/api/user", user);
+
+app.get("/serverUp", async(req:Request,res:Response)=>{
+  try {
+    res.status(200).json({msg:"Server is awake!"})
+  } catch (error:any) {
+    res.status(500).json({error})
+  }
+});
 
 app.listen(PORT, () => {
   logger.info(`Server has started and running on port ${PORT}`);
