@@ -15,9 +15,9 @@ export async function ADD_SNIPPET(body: SNIPPET_SCHEMA) {
   }
 }
 
-export async function FETCH_ALL_SNIPPETS(c_id: string, user_id: string) {
+export async function FETCH_ALL_SNIPPETS(c_id: string) {
   try {
-    const snippetsData = await Snippet.find({ category_id: c_id, user_id });
+    const snippetsData = await Snippet.find({ category_id: c_id });
 
     return snippetsData;
   } catch (error) {
@@ -27,9 +27,9 @@ export async function FETCH_ALL_SNIPPETS(c_id: string, user_id: string) {
     throw error;
   }
 }
-export async function FETCH_A_SNIPPET(s_id: string, user_id: string) {
+export async function FETCH_A_SNIPPET(s_id: string) {
   try {
-    const snippetsData = await Snippet.find({ _id: s_id, user_id });
+    const snippetsData = await Snippet.find({ _id: s_id }); // [FIXME] removed user_id check, for sharing purpose, need to fix this in future
 
     return snippetsData;
   } catch (error) {
@@ -56,6 +56,9 @@ export async function UPDATE_SNIPPET_SHARE_STATUS(
     throw error;
   }
 }
+
+
+
 export async function SHARE_SNIPPET_PERSONALLY(
   snippet_id: string,
   email: string
@@ -102,6 +105,43 @@ export async function GLOBAL_SEARCH(text: string, user_id: string) {
   } catch (error) {
     logger.error(
       `Caught error in snippet service while doing global search => ${error}`
+    );
+    throw error;
+  }
+}
+// export interface SNIP_SCHEMA {
+//   title: string;
+//   description: string;
+//   code: string;
+//   tags: string[];
+// }
+
+export async function EDIT_SNIPPET(id:string, user_id: string, Body: Partial<SNIPPET_SCHEMA>){
+  try {
+    const updatedSnippet = await Snippet.findOneAndUpdate({_id: id, user_id}, {$set:{...Body}},{new:true})
+    console.log("updated",updatedSnippet)
+    return updatedSnippet;
+  } catch (error) {
+    logger.error(`Error editing snippet: ${error}`)
+    throw error;
+  }
+}
+
+
+export async function CHECK_ACCESS(snippet_id: string, email: string) {
+  try {
+    const snippet = await SharedDb.findOne({
+      _id: snippet_id,
+      email,
+      shared_data: "snippet",
+    });
+    if (snippet) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    logger.error(
+      `Caught error in snippet service while checking for snippet access => ${error}`
     );
     throw error;
   }

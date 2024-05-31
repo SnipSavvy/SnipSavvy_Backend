@@ -5,7 +5,9 @@ import {
   DELETE_WORKSPACE_ACCESS,
   EDIT_WORKSPACE,
   FETCH_ALL_WORKSPACES,
+  FETCH_SHARED_WORKSPACES,
   GET_WORKSPACE_ACCESS,
+  REMOVE_SHARED_WORKSPACES,
 } from "../services/workspace.service";
 import logger from "../utils/logger";
 import mongoose from "mongoose";
@@ -35,22 +37,23 @@ export async function fetchWorkspaces(req: AuthRequest, res: Response) {
   try {
     const id = req.user_id;
     let data;
+    const { email } = req.query;
 
-    if (id && typeof id == "string") {
+    if (id && typeof id == "string" && !email) {
       const objectId = new mongoose.Types.ObjectId(id);
       logger.info(
         `REQ : Fetch all workspaces for a particular user => ${objectId}`
       );
       data = await FETCH_ALL_WORKSPACES(objectId);
     } else {
-      logger.error("user id is required or is in the wrong format");
-      return res.status(500).json({
-        message: "user id is required or is in the wrong format",
-      });
+      if (email && typeof email == "string") {
+        // now fetch all the shared workspaces on this email
+        data = await FETCH_SHARED_WORKSPACES(email);
+      }
     }
 
     logger.info(`RESP : Workspaces fetched => ${data}`);
-    return res.status(201).json(data);
+    return res.status(200).json(data);
   } catch (error) {
     logger.error(`Error in fetching workspaces => ${error}`);
     return res.status(500).json({
@@ -130,24 +133,56 @@ export async function Remove_Workspace_Access(req: Request, res: Response) {
 
 export async function editWorkspace(req: AuthRequest, res: Response) {
   try {
-    const {id,  name, description } = req.body; 
+    const { id, name, description } = req.body;
     const owner_id = req.user_id;
-    const updatedWorkspace = await EDIT_WORKSPACE(id, { name, description} , owner_id);
-    if(!updatedWorkspace){
+    const updatedWorkspace = await EDIT_WORKSPACE(
+      id,
+      { name, description },
+      owner_id
+    );
+    if (!updatedWorkspace) {
       return res.status(404).json({
         message: "Workspace Not Found",
       });
     }
-    
+
     if (updatedWorkspace) {
       logger.info(`Workspace with id ${id} edited successfully`);
-      return res.status(200).json({ message: 'Workspace edited successfully', data: updatedWorkspace });
+      return res.status(200).json({
+        message: "Workspace edited successfully",
+        data: updatedWorkspace,
+      });
     } else {
       logger.error(`Workspace with id ${id} not found or could not be edited`);
-      return res.status(404).json({ message: 'Workspace not found or could not be edited' });
+      return res
+        .status(404)
+        .json({ message: "Workspace not found or could not be edited" });
     }
   } catch (error) {
     logger.error(`Error editing workspace: ${error}`);
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function remove_shared_workspaces(req: Request, res: Response) {
+  try {
+    const { workspace_id, email } = req.body;
+    logger.info(
+      `REQ : remove shared workspace for email => ${email} & workspace_id => ${workspace_id}}`
+    );
+    if (workspace_id && email) {
+      const data = await REMOVE_SHARED_WORKSPACES(workspace_id, email);
+      logger.info("Shared workspace has been removed successfully");
+      return res.status(200).json({ msg: "Shared workspace has been removed" });
+    }
+    logger.error("workspace id or email is not provided in the body");
+    return res
+      .status(500)
+      .json({ msg: "Workspace id or email is not provided in body" });
+  } catch (error) {
+    logger.error(
+      `Internal server error while removing shared workspace => ${error}`
+    );
+    return res.status(500).json({ msg: `Internal server error => ${error}` });
   }
 }
