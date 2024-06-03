@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes: 
+      - mongodb_vol:/data/db
+  snipbe:
+    image: snipbe
+    container_name: snipsavvy_backend
+    ports:
+      - 8001:8001
+    environment: 
+      - PORT=8001
+      - MONGO_URL=mongodb://mongodb:27017/snipsavvy
+
+volumes:
+  mongodb_vol:
